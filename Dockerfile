@@ -42,7 +42,7 @@ RUN set -ex \
     && apt-get install -y gcc-6 g++-6 \
 	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 10 \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 10 \
-	&& apt-get purge -y --auto-remove $buildDep
+	&& apt-get purge -y --auto-remove $buildDeps
 
 
 WORKDIR ${SRC}
