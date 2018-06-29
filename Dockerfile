@@ -32,6 +32,19 @@ RUN set -ex \
     && apt-get clean \
     && rm -rf /tmp/* /var/tmp/*
 
+RUN set -ex \
+	&& buildDeps=' \
+		software-properties-common \
+	' \
+	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+	&& add-apt-repository ppa:ubuntu-toolchain-r/test \
+    && apt-get update \
+    && apt-get install -y gcc-6 g++-6 \
+	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 10 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 10 \
+	&& apt-get purge -y --auto-remove $buildDep
+
+
 WORKDIR ${SRC}
 
 RUN set -ex && for module in gstreamer gst-python gst-libav gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly; do \
@@ -89,7 +102,7 @@ RUN set -ex \
 	&& apt-get clean \
 	&& rm -rf /tmp/* /var/tmp/*
 
-# libfaac-dev \
+# libfaac-dev \ Check if we need this
 
 RUN set -ex && pip install pycairo 
 RUN set -ex && pip install pygobject
