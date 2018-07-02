@@ -1,4 +1,4 @@
-ARG BASE=ashwoods/qemu-gstreamer:arm64v8-latest
+ARG BASE=ashwoods/qemu-python:arm64v8-latest
 FROM ${BASE} as base
 ARG QEMU_ARCH=x86_64
 COPY qemu-${QEMU_ARCH}-static /usr/bin/
@@ -33,17 +33,7 @@ RUN set -ex \
     && apt-get clean \
     && rm -rf /tmp/* /var/tmp/*
 
-RUN set -ex \
-	&& buildDeps=' \
-		software-properties-common \
-	' \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	&& add-apt-repository ppa:ubuntu-toolchain-r/test \
-    && apt-get update \
-    && apt-get install -y gcc-6 g++-6 \
-	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 10 \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 10 \
-	&& apt-get purge -y --auto-remove $buildDeps
+
 
 
 WORKDIR ${SRC}
@@ -104,6 +94,18 @@ RUN set -ex \
 	&& rm -rf /tmp/* /var/tmp/*
 
 # libfaac-dev \ Check if we need this
+
+RUN set -ex \
+	&& buildDeps=' \
+		software-properties-common \
+	' \
+	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+	&& add-apt-repository ppa:ubuntu-toolchain-r/test \
+    && apt-get update \
+    && apt-get install -y gcc-7 g++-7 \
+	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 10 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10 \
+	&& apt-get purge -y --auto-remove $buildDeps
 
 RUN set -ex && pip install pycairo 
 RUN set -ex && pip install pygobject
@@ -175,8 +177,10 @@ WORKDIR ${SRC}
 RUN git clone https://github.com/ystreet/gst-omx-nvidia.git --branch tegra-28.2.1-gst-1.14
 WORKDIR ${SRC}/gst-omx-nvidia
 
+RUN set -ex && gcc --version 
+
 RUN set -ex && \
-       ./autogen.sh --disable-gtk-doc --prefix=${PREFIX} --enable-introspection --with-omx-target=tegra \
+       ./autogen.sh --disable-gtk-doc --prefix=${PREFIX} --with-omx-target=tegra \
         && make -j$(nproc) \
  	&& make install \
     && ldconfig  
