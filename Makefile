@@ -33,6 +33,7 @@ build: ## Build the container - removed `arm32v6` for now
 manifest: ## Create docker manifest file
 	docker manifest create \
 		$(DOCKER_REGISTRY)/$(REPO):latest \
+		$(DOCKER_REGISTRY)/$(REPO):amd64-latest \
 		$(DOCKER_REGISTRY)/$(REPO):arm64v8-latest
 	docker manifest annotate $(DOCKER_REGISTRY)/$(REPO):latest $(DOCKER_REGISTRY)/$(REPO):arm64v8-latest --os linux --arch arm64 --variant armv8
 	docker manifest push $(DOCKER_REGISTRY)/$(REPO):latest
