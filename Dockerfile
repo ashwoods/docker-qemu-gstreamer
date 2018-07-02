@@ -33,9 +33,6 @@ RUN set -ex \
     && apt-get clean \
     && rm -rf /tmp/* /var/tmp/*
 
-
-
-
 WORKDIR ${SRC}
 
 RUN set -ex && for module in gstreamer gst-python gst-libav gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly; do \
@@ -51,26 +48,36 @@ RUN set -ex \
 		autopoint \
 		autotools-dev \
 		bison \
-		yasm \
 		build-essential \
-		gobject-introspection \
 		cmake \
 		dpkg-dev \
+		faad \
 		flex \
-		libtool \
 		gettext \
-		libgirepository1.0-dev \
+		gobject-introspection \
+		libtool \
+		yasm \
 		libasound2-dev \
 		libavcodec-dev \
+		libavfilter-dev \
+		libavformat-dev \
+		libavutil-dev \
 		libbz2-dev \
+		libcairo-dev \
 		libcrypto++-dev \
+		libfaac-dev \
 		libfaad-dev \
+		libgirepository1.0-dev \
+		libgl1-mesa-dev \
+		libgles2-mesa-dev \
 		libgnutls28-dev \
 		libgupnp-igd-1.0-dev \
 		libjack-jackd2-dev \
+		libjson-glib-dev \
 		libmad0-dev \
 		libogg-dev \
 		libopus-dev \
+		liborc-dev \
 		libpulse-dev \
 		libsoup2.4-dev \
 		libsrtp-dev \
@@ -81,12 +88,6 @@ RUN set -ex \
 		libvpx-dev \
 		libx264-dev \
 		libxv-dev \
-     	libavutil-dev \
- 		libcairo-dev \
-		libavfilter-dev \
- 		libavformat-dev \
- 		libjson-glib-dev \
-		liborc-dev \
 	' \
 	&& sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list \
 	&& apt-get update && apt-get install -yq $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
@@ -102,9 +103,9 @@ RUN set -ex \
 	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& add-apt-repository ppa:ubuntu-toolchain-r/test \
     && apt-get update \
-    && apt-get install -y gcc-7 g++-7 \
-	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 10 \
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10 \
+    && apt-get install -y gcc-6 g++-6 \
+	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 10 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 10 \
 	&& apt-get purge -y --auto-remove $buildDeps
 
 RUN set -ex && pip install pycairo 
@@ -128,6 +129,8 @@ RUN ./configure --prefix=${PREFIX} --enable-introspection \
 	&& make -j$(nproc) \
 	&& make install \
     && ldconfig 
+
+ENV LD_LIBRARY_PATH=${PREFIX}/lib:${PREFIX}
 
 WORKDIR ${SRC}/gst-plugins-base
 RUN set -ex && \
@@ -172,18 +175,6 @@ RUN set -ex && \
     && ldconfig  
 
 RUN pip install --upgrade --no-deps --force-reinstall pygobject
-
-WORKDIR ${SRC}
-RUN git clone https://github.com/ystreet/gst-omx-nvidia.git --branch tegra-28.2.1-gst-1.14
-WORKDIR ${SRC}/gst-omx-nvidia
-
-RUN set -ex && gcc --version 
-
-RUN set -ex && \
-       ./autogen.sh --disable-gtk-doc --prefix=${PREFIX} --with-omx-target=tegra \
-        && make -j$(nproc) \
- 	&& make install \
-    && ldconfig  
 
 WORKDIR /
 
