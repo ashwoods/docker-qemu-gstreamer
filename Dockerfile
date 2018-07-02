@@ -18,7 +18,6 @@ ENV LD_LIBRARY_PATH=${PREFIX}
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
 ENV PATH=${PREFIX}/bin:${PATH}  
 ENV GI_TYPELIB_PATH=${PREFIX}/share/gir-1.0:${PREFIX}/lib/girepository-1.0
-# ENV GST_PLUGIN_PATH=${PREFIX}/lib/gstreamer-1.0
 
 RUN set -ex && env
 
