@@ -1,4 +1,4 @@
-ARG BASE=python:3.6
+ARG BASE=ashwoods/qemu-gstreamer:arm64v8-latest
 FROM ${BASE} as base
 ARG QEMU_ARCH=x86_64
 COPY qemu-${QEMU_ARCH}-static /usr/bin/
@@ -18,6 +18,7 @@ ENV LD_LIBRARY_PATH=${PREFIX}
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
 ENV PATH=${PREFIX}/bin:${PATH}  
 ENV GI_TYPELIB_PATH=${PREFIX}/share/gir-1.0:${PREFIX}/lib/girepository-1.0
+ENV GST_PLUGIN_PATH=${PREFIX}/lib/gstreamer-1.0
 
 RUN set -ex && env
 
@@ -170,6 +171,15 @@ RUN set -ex && \
 
 RUN pip install --upgrade --no-deps --force-reinstall pygobject
 
+WORKDIR ${SRC}
+RUN git clone https://github.com/ystreet/gst-omx-nvidia.git --branch tegra-28.2.1-gst-1.14
+WORKDIR ${SRC}/gst-omx-nvidia
+
+RUN set -ex && \
+       ./autogen.sh --disable-gtk-doc --prefix=${PREFIX} --enable-introspection --with-omx-target=tegra \
+        && make -j$(nproc) \
+ 	&& make install \
+    && ldconfig  
 
 WORKDIR /
 
