@@ -1,7 +1,7 @@
 ARG BASE=ashwoods/qemu-python:latest
 FROM ${BASE} as base
 ARG QEMU_ARCH=x86_64
-COPY qemu-${QEMU_ARCH}-static /usr/bin/
+# COPY qemu-${QEMU_ARCH}-static /usr/bin/
 
 ARG PREFIX='/usr/local'
 # ARG GST_VERSION=1.14.1
